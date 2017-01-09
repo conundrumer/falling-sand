@@ -3,6 +3,25 @@
 <head>
   <meta charset="utf-8">
   <title>Falling Sand</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+    h1 {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      z-index: 2;
+    }
+  </style>
 </head>
 
 <body>
@@ -10,6 +29,8 @@
   <h1>Falling Sand</h1>
 
   <div id='container'></div>
+
+  <canvas id="c"></canvas>
 
   <script src="/bundle.js"></script>
 </body>
