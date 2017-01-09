@@ -1,0 +1,19 @@
+{
+  "name": "falling-sand",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node_modules/.bin/webpack-dev-server",
+    "build": "NODE_ENV=production node_modules/.bin/webpack -p && cp src/index.html dist"
+  },
+  "repository": "https://github.com/conundrumer/falling-sand",
+  "author": "<davidelu93@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "webpack": "2.2.0-rc.3",
+    "webpack-dev-server": "2.2.0-rc.0"
+  }
+}
