@@ -2,13 +2,15 @@ import twgl from 'twgl-base.js'
 
 import vs from './vert.glsl'
 import fs from './frag.glsl'
+import gol from './gol.glsl'
 
 import time from './time'
-import { step } from './gol'
+import { step } from './texture'
 
 let gl = document.getElementById('c').getContext('webgl')
 
 let programInfo = twgl.createProgramInfo(gl, [vs, fs])
+let golProgramInfo = twgl.createProgramInfo(gl, [vs, gol])
 
 let arrays = {
   position: { numComponents: 2, data: [1, 1, 1, -1, -1, 1, -1, -1] }
@@ -18,7 +20,7 @@ let bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays)
 let animationFrame
 function render () {
   time.inc()
-  let tex = step()
+  let tex = step(golProgramInfo)
   twgl.resizeCanvasToDisplaySize(gl.canvas)
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 

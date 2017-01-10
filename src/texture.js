@@ -1,16 +1,11 @@
 import twgl from 'twgl-base.js'
 
-import vs from './vert.glsl'
-import gol from './gol.glsl'
-
 let gl = document.getElementById('c').getContext('webgl')
 
 let arrays = {
   position: { numComponents: 2, data: [1, 1, 1, -1, -1, 1, -1, -1] }
 }
 let bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays)
-
-let golProgramInfo = twgl.createProgramInfo(gl, [vs, gol])
 
 let width = 100
 let height = 100
@@ -35,7 +30,7 @@ let textureBack = twgl.createTexture(gl, textureOptions)
 let fbFront = twgl.createFramebufferInfo(gl, [{attachment: textureFront}])
 let fbBack = twgl.createFramebufferInfo(gl, [{attachment: textureBack}])
 
-export function step () {
+export function step (golProgramInfo) {
   // render to textureFront
   gl.viewport(0, 0, width, height)
 
