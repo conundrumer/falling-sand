@@ -2,6 +2,8 @@ import twgl from 'twgl-base.js'
 
 import copyVert from './copy.vert.glsl'
 import copyFrag from './copy.frag.glsl'
+import drawVert from './draw.vert.glsl'
+import drawFrag from './draw.frag.glsl'
 import golFrag from './gol.frag.glsl'
 
 import {createSandbox} from './sandbox'
@@ -10,7 +12,8 @@ let hotReload
 export function createSimulator (gl) {
   if (module.hot && hotReload) return hotReload
 
-  let renderProgramInfo = twgl.createProgramInfo(gl, [copyVert, copyFrag])
+  let inputProgramInfo = twgl.createProgramInfo(gl, [drawVert, drawFrag])
+  let displayProgramInfo = twgl.createProgramInfo(gl, [copyVert, copyFrag])
   let golProgramInfo = twgl.createProgramInfo(gl, [copyVert, golFrag])
 
   // quad
@@ -18,24 +21,59 @@ export function createSimulator (gl) {
     position: { numComponents: 2, data: [1, 1, 1, -1, -1, 1, -1, -1] }
   })
 
-  let sandbox = createSandbox(gl, bufferInfo)
+  let sandbox = createSandbox(gl)
 
+  function render ({programInfo, uniforms, viewport, framebufferInfo = null}) {
+    gl.useProgram(programInfo.program)
+    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo)
+    twgl.setUniforms(programInfo, uniforms)
+    twgl.bindFramebufferInfo(gl, framebufferInfo)
+    gl.viewport(...viewport)
+    twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLE_STRIP)
+  }
+
+  function step (programInfo) {
+    render({
+      programInfo,
+      uniforms: {
+        state: sandbox.getPreviousTexture(),
+        scale: sandbox.getDimensions()
+      },
+      viewport: [0, 0, ...sandbox.getDimensions()],
+      framebufferInfo: sandbox.getFramebufferInfo()
+    })
+
+    sandbox.swap()
+  }
   let simulator = {
-    step () {
-      sandbox.step(golProgramInfo)
+    update () {
+      step(golProgramInfo)
     },
-    render () {
-      let uniforms = {
-        state: sandbox.getTexture(),
-        resolution: [gl.canvas.width, gl.canvas.height]
-      }
-
-      gl.useProgram(renderProgramInfo.program)
-      twgl.setBuffersAndAttributes(gl, renderProgramInfo, bufferInfo)
-      twgl.setUniforms(renderProgramInfo, uniforms)
-      twgl.bindFramebufferInfo(gl)
-      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-      twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLE_STRIP)
+    input ({cell = [1, 1, 1, 1], center = [0, 0], diameter = 1, circle = false}) {
+      render({
+        programInfo: inputProgramInfo,
+        uniforms: {
+          cell,
+          center,
+          diameter,
+          circle,
+          scale: sandbox.getDimensions(),
+          state: sandbox.getPreviousTexture()
+        },
+        viewport: [0, 0, ...sandbox.getDimensions()],
+        framebufferInfo: sandbox.getFramebufferInfo()
+      })
+      sandbox.swap()
+    },
+    display () {
+      render({
+        programInfo: displayProgramInfo,
+        uniforms: {
+          state: sandbox.getTexture(),
+          resolution: [gl.canvas.width, gl.canvas.height]
+        },
+        viewport: [0, 0, gl.canvas.width, gl.canvas.height]
+      })
     }
   }
 

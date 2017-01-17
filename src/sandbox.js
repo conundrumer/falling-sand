@@ -11,7 +11,7 @@ function initTexture (textureData, width, height) {
 }
 
 let hotReload
-export function createSandbox (gl, bufferInfo) {
+export function createSandbox (gl) {
   if (module.hot && hotReload) return hotReload
 
   let width = 512
@@ -37,22 +37,18 @@ export function createSandbox (gl, bufferInfo) {
     getTexture () {
       return textureFront
     },
-    step (programInfo) {
-      // render to textureFront
-      let uniforms = {
-        state: textureBack,
-        scale: [width, height]
-      }
-
-      gl.useProgram(programInfo.program)
-      twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo)
-      twgl.setUniforms(programInfo, uniforms)
-      twgl.bindFramebufferInfo(gl, fbFront)
-      gl.viewport(0, 0, width, height)
-      twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLE_STRIP)
-
-      ;[textureFront, textureBack] = [textureBack, textureFront]
-      ;[fbFront, fbBack] = [fbBack, fbFront]
+    getPreviousTexture () {
+      return textureBack
+    },
+    getDimensions () {
+      return [width, height]
+    },
+    getFramebufferInfo () {
+      return fbFront
+    },
+    swap () {
+      [textureFront, textureBack] = [textureBack, textureFront];
+      [fbFront, fbBack] = [fbBack, fbFront]
     },
     dispose () {
       gl.deleteTexture(textureFront)

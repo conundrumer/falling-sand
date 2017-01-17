@@ -12,8 +12,8 @@ function init () {
   let timer = {
     start () {
       (function loop () {
-        simulator.step()
-        simulator.render()
+        simulator.update()
+        simulator.display()
         animationFrame = window.requestAnimationFrame(loop)
       })()
     },
@@ -22,7 +22,7 @@ function init () {
     }
   }
 
-  simulator.render()
+  simulator.display()
   timer.start()
 
   if (module.hot) {
