@@ -1,51 +1,39 @@
 import twgl from 'twgl-base.js'
 
-import vs from './vert.glsl'
-import fs from './frag.glsl'
-import gol from './gol.glsl'
+import {createSimulator} from './simulator'
 
-import time from './time'
-import { step } from './texture'
+function init () {
+  let gl = document.getElementById('c').getContext('webgl')
+  twgl.resizeCanvasToDisplaySize(gl.canvas)
 
-import gl from './gl'
+  let simulator = createSimulator(gl)
 
-let programInfo = twgl.createProgramInfo(gl, [vs, fs])
-let golProgramInfo = twgl.createProgramInfo(gl, [vs, gol])
-
-let arrays = {
-  position: { numComponents: 2, data: [1, 1, 1, -1, -1, 1, -1, -1] }
-}
-let bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays)
-
-let animationFrame
-function render () {
-  time.inc()
-  let tex = step(golProgramInfo)
-
-  let uniforms = {
-    state: tex,
-    // time: time.get() * 0.01,
-    resolution: [gl.canvas.width, gl.canvas.height]
+  let animationFrame
+  let timer = {
+    start () {
+      (function loop () {
+        simulator.step()
+        simulator.render()
+        animationFrame = window.requestAnimationFrame(loop)
+      })()
+    },
+    stop () {
+      window.cancelAnimationFrame(animationFrame)
+    }
   }
 
-  gl.useProgram(programInfo.program)
-  twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo)
-  twgl.setUniforms(programInfo, uniforms)
-  twgl.bindFramebufferInfo(gl)
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-  twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLE_STRIP)
+  simulator.render()
+  timer.start()
 
-  animationFrame = window.requestAnimationFrame(render)
+  if (module.hot) {
+    module.hot.dispose(() => timer.stop())
+  }
 }
-animationFrame = window.requestAnimationFrame(render)
 
+init()
 // … the application entry module
 // As it doesn’t export it can accept itself. A dispose handler can pass the application state on replacement.
 if (module.hot) {
   // this module is hot reloadable
   module.hot.accept()
-
-  module.hot.dispose(() => {
-    window.cancelAnimationFrame(animationFrame)
-  })
 }
