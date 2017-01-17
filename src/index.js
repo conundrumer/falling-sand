@@ -7,7 +7,7 @@ import gol from './gol.glsl'
 import time from './time'
 import { step } from './texture'
 
-let gl = document.getElementById('c').getContext('webgl')
+import gl from './gl'
 
 let programInfo = twgl.createProgramInfo(gl, [vs, fs])
 let golProgramInfo = twgl.createProgramInfo(gl, [vs, gol])
@@ -21,8 +21,6 @@ let animationFrame
 function render () {
   time.inc()
   let tex = step(golProgramInfo)
-  twgl.resizeCanvasToDisplaySize(gl.canvas)
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
   let uniforms = {
     state: tex,
@@ -34,6 +32,7 @@ function render () {
   twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo)
   twgl.setUniforms(programInfo, uniforms)
   twgl.bindFramebufferInfo(gl)
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
   twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLE_STRIP)
 
   animationFrame = window.requestAnimationFrame(render)

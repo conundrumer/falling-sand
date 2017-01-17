@@ -1,14 +1,14 @@
 import twgl from 'twgl-base.js'
 
-let gl = document.getElementById('c').getContext('webgl')
+import gl from './gl'
 
 let arrays = {
   position: { numComponents: 2, data: [1, 1, 1, -1, -1, 1, -1, -1] }
 }
 let bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays)
 
-let width = 100
-let height = 100
+let width = 512
+let height = 512
 
 let initTexture = new Uint8Array(width * height * 4)
 for (let i = 0; i < 4 * width * height; i += 4) {
@@ -23,6 +23,7 @@ let textureOptions = {
   height,
   mag: gl.NEAREST,
   min: gl.LINEAR,
+  wrap: gl.REPEAT,
   src: initTexture
 }
 let textureFront = twgl.createTexture(gl, textureOptions)
@@ -32,7 +33,6 @@ let fbBack = twgl.createFramebufferInfo(gl, [{attachment: textureBack}])
 
 export function step (golProgramInfo) {
   // render to textureFront
-  gl.viewport(0, 0, width, height)
 
   let uniforms = {
     state: textureBack,
@@ -43,6 +43,7 @@ export function step (golProgramInfo) {
   twgl.setBuffersAndAttributes(gl, golProgramInfo, bufferInfo)
   twgl.setUniforms(golProgramInfo, uniforms)
   twgl.bindFramebufferInfo(gl, fbFront)
+  gl.viewport(0, 0, width, height)
   twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLE_STRIP)
 
   let tex = textureFront
