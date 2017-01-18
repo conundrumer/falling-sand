@@ -32,10 +32,12 @@ export function createSimulator (gl) {
     twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLE_STRIP)
   }
 
+  let time = 0
   function step (programInfo) {
     render({
       programInfo,
       uniforms: {
+        bias: [time % 2, time % 2],
         state: sandbox.getTexture(),
         scale: sandbox.getDimensions()
       },
@@ -47,6 +49,7 @@ export function createSimulator (gl) {
   let simulator = {
     update () {
       step(ruleProgramInfo)
+      time++
     },
     input ({cell = [1, 1, 1, 1], center = [0.5, 0.5], diameter = 1}) {
       render({
