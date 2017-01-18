@@ -60,7 +60,7 @@ module.exports = (options = {}) => ({
         ]
       }
     }, {
-      test: /\.glsl$/,
+      test: /\.vert|\.frag$/,
       loader: 'webpack-glsl-loader'
     }]
   },

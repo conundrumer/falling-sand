@@ -1,10 +1,10 @@
 import twgl from 'twgl-base.js'
 
-import copyVert from './copy.vert.glsl'
-import copyFrag from './copy.frag.glsl'
-import drawVert from './draw.vert.glsl'
-import drawFrag from './draw.frag.glsl'
-import ruleFrag from './rule.frag.glsl'
+import copyVert from './copy.vert'
+import copyFrag from './copy.frag'
+import drawVert from './draw.vert'
+import drawFrag from './draw.frag'
+import ruleFrag from './rule.frag'
 
 import {createSandbox} from './sandbox'
 
