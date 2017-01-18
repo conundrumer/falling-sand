@@ -14,8 +14,8 @@ let hotReload
 export function createSandbox (gl) {
   if (module.hot && hotReload) return hotReload
 
-  let width = 512
-  let height = 512
+  let width = 64
+  let height = 64
 
   let textureData = new Uint8Array(width * height * 4)
   initTexture(textureData, width, height)
@@ -37,14 +37,17 @@ export function createSandbox (gl) {
     getTexture () {
       return textureFront
     },
-    getPreviousTexture () {
+    getNextTexture () {
       return textureBack
-    },
-    getDimensions () {
-      return [width, height]
     },
     getFramebufferInfo () {
       return fbFront
+    },
+    getNextFramebufferInfo () {
+      return fbBack
+    },
+    getDimensions () {
+      return [width, height]
     },
     swap () {
       [textureFront, textureBack] = [textureBack, textureFront];

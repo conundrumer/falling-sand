@@ -36,36 +36,33 @@ export function createSimulator (gl) {
     render({
       programInfo,
       uniforms: {
-        state: sandbox.getPreviousTexture(),
+        state: sandbox.getTexture(),
         scale: sandbox.getDimensions()
       },
       viewport: [0, 0, ...sandbox.getDimensions()],
-      framebufferInfo: sandbox.getFramebufferInfo()
+      framebufferInfo: sandbox.getNextFramebufferInfo()
     })
-
     sandbox.swap()
   }
   let simulator = {
     update () {
       step(golProgramInfo)
     },
-    input ({cell = [1, 1, 1, 1], center = [0, 0], diameter = 1, circle = false}) {
+    input ({cell = [1, 1, 1, 1], center = [0.5, 0.5], diameter = 1}) {
       render({
         programInfo: inputProgramInfo,
         uniforms: {
           cell,
           center,
           diameter,
-          circle,
-          scale: sandbox.getDimensions(),
-          state: sandbox.getPreviousTexture()
+          scale: sandbox.getDimensions()
         },
         viewport: [0, 0, ...sandbox.getDimensions()],
         framebufferInfo: sandbox.getFramebufferInfo()
       })
-      sandbox.swap()
     },
     display () {
+      twgl.resizeCanvasToDisplaySize(gl.canvas)
       render({
         programInfo: displayProgramInfo,
         uniforms: {

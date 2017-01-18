@@ -1,10 +1,8 @@
-import twgl from 'twgl-base.js'
-
 import {createSimulator} from './simulator'
 
 function init () {
-  let gl = document.getElementById('c').getContext('webgl')
-  twgl.resizeCanvasToDisplaySize(gl.canvas)
+  let canvas = document.getElementById('c')
+  let gl = canvas.getContext('webgl')
 
   let simulator = createSimulator(gl)
 
@@ -25,8 +23,35 @@ function init () {
   simulator.display()
   timer.start()
 
+  let stopped = false
+  let down = e => {
+    e.preventDefault()
+    if (stopped) {
+      timer.start()
+    } else {
+      timer.stop()
+    }
+    stopped = !stopped
+  }
+
+  let click = e => {
+    e.preventDefault()
+    simulator.input({
+      center: [e.clientX / canvas.clientWidth, e.clientY / canvas.clientHeight],
+      diameter: 4
+    })
+
+    window.requestAnimationFrame(() => simulator.display())
+  }
+  canvas.addEventListener('mousedown', down)
+  canvas.addEventListener('mousemove', click)
+
   if (module.hot) {
-    module.hot.dispose(() => timer.stop())
+    module.hot.dispose(() => {
+      timer.stop()
+      canvas.removeEventListener('mousedown', down)
+      canvas.removeEventListener('mousemove', click)
+    })
   }
 }
 
