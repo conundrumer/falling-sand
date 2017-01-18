@@ -4,7 +4,7 @@ import copyVert from './copy.vert.glsl'
 import copyFrag from './copy.frag.glsl'
 import drawVert from './draw.vert.glsl'
 import drawFrag from './draw.frag.glsl'
-import golFrag from './gol.frag.glsl'
+import ruleFrag from './rule.frag.glsl'
 
 import {createSandbox} from './sandbox'
 
@@ -14,7 +14,7 @@ export function createSimulator (gl) {
 
   let inputProgramInfo = twgl.createProgramInfo(gl, [drawVert, drawFrag])
   let displayProgramInfo = twgl.createProgramInfo(gl, [copyVert, copyFrag])
-  let golProgramInfo = twgl.createProgramInfo(gl, [copyVert, golFrag])
+  let ruleProgramInfo = twgl.createProgramInfo(gl, [copyVert, ruleFrag])
 
   // quad
   let bufferInfo = twgl.createBufferInfoFromArrays(gl, {
@@ -46,7 +46,7 @@ export function createSimulator (gl) {
   }
   let simulator = {
     update () {
-      step(golProgramInfo)
+      step(ruleProgramInfo)
     },
     input ({cell = [1, 1, 1, 1], center = [0.5, 0.5], diameter = 1}) {
       render({
