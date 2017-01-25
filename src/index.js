@@ -17,7 +17,19 @@ function init () {
   let running = false
 
   // input
-  let cellTypes = [[1, 1, 1, 1], [0, 0, 0, 1]]
+  const FALL = 90 / 256
+  // const OFF = 130 / 256
+  // const ON = 210 / 256
+  const RISE = 250 / 256
+  const EMPTY = 80 / 256
+  let cellTypes = [
+    [RISE, 0, 0, 1],
+    [0, RISE, 0, 1],
+    [0, 0, RISE, 1],
+    [FALL, 0, 0, 1],
+    [0, FALL, 0, 1],
+    [0, 0, FALL, 1],
+    [EMPTY, EMPTY, EMPTY, 1]]
   let draw = position => {
     simulator.input({
       cell: cellTypes[selectedCellType],
@@ -74,8 +86,13 @@ function init () {
   console.info(`
     Key Commands:
     - Space bar: Start/stop simulation
-    - 1: Select cell type ON
-    - 2: Select cell type OFF
+    - 1: Select cell type RED RISE
+    - 2: Select cell type GREEN RISE
+    - 3: Select cell type BLUE RISE
+    - 4: Select cell type RED FALL
+    - 5: Select cell type GREEN FALL
+    - 6: Select cell type BLUE FALL
+    - 7: Select cell type EMPTY
     - ArrowUp: Increase brush size
     - ArrowDown: Decrease brush size
   `)
@@ -92,11 +109,13 @@ function init () {
         }
         break
       case '1':
-        selectedCellType = 0
-        console.info('Cell type:', cellTypes[selectedCellType])
-        break
       case '2':
-        selectedCellType = 1
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+        selectedCellType = parseInt(e.key, 10) - 1
         console.info('Cell type:', cellTypes[selectedCellType])
         break
       case 'ArrowUp':

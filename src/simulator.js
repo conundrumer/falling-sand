@@ -37,7 +37,6 @@ export function createSimulator (gl) {
     render({
       programInfo,
       uniforms: {
-        bias: [time % 2, time % 2],
         state: sandbox.getTexture(),
         scale: sandbox.getDimensions()
       },

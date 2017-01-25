@@ -2,10 +2,9 @@ import twgl from 'twgl-base.js'
 
 function initTexture (textureData, width, height) {
   for (let i = 0; i < 4 * width * height; i += 4) {
-    let x = Math.random() > 0.5 ? 255 : 0
-    textureData[i] = x
-    textureData[i + 1] = x
-    textureData[i + 2] = x
+    textureData[i] = 80
+    textureData[i + 1] = 80
+    textureData[i + 2] = 80
     textureData[i + 3] = 255
   }
 }
