@@ -17,11 +17,11 @@ function init () {
   let running = false
 
   // input
-  const FALL = 90 / 256
-  // const OFF = 130 / 256
-  // const ON = 210 / 256
-  const RISE = 250 / 256
-  const EMPTY = 80 / 256
+  const FALL = 1 / 8
+  // const OFF = 3 / 8
+  // const ON = 5 / 8
+  const RISE = 7 / 8
+  const EMPTY = 0
   let cellTypes = [
     [RISE, 0, 0, 1],
     [0, RISE, 0, 1],

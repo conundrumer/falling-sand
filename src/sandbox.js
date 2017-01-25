@@ -2,9 +2,9 @@ import twgl from 'twgl-base.js'
 
 function initTexture (textureData, width, height) {
   for (let i = 0; i < 4 * width * height; i += 4) {
-    textureData[i] = 80
-    textureData[i + 1] = 80
-    textureData[i + 2] = 80
+    textureData[i] = 0
+    textureData[i + 1] = 0
+    textureData[i + 2] = 0
     textureData[i + 3] = 255
   }
 }

@@ -11,11 +11,11 @@ vec3 get_relative(vec2 offset) {
     return texture2D(state, (gl_FragCoord.xy + offset) / scale).rgb;
 }
 
-const int FALL = 90;
-const int OFF = 130;
-const int ON = 210;
-const int RISE = 250;
-const float steps = 256.0;
+const int FALL = 1;
+const int OFF = 3;
+const int ON = 5;
+const int RISE = 7;
+const float steps = 8.0;
 
 bool has_neighbor(vec4 neighbors, int neighbor_state) {
     return
