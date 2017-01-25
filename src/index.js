@@ -17,10 +17,12 @@ function init () {
   let running = false
 
   // input
-  const FALL = 1 / 8
-  // const OFF = 3 / 8
-  // const ON = 5 / 8
-  const RISE = 7 / 8
+  const FALL_GREY = 1 / 8
+  const FALL = 2 / 8
+  // const OFF = 4 / 8
+  // const ON = 6 / 8
+  const RISE_GREY = 7 / 8
+  const RISE = 8 / 8
   const EMPTY = 0
   let cellTypes = [
     [RISE, 0, 0, 1],
@@ -29,6 +31,8 @@ function init () {
     [FALL, 0, 0, 1],
     [0, FALL, 0, 1],
     [0, 0, FALL, 1],
+    [RISE_GREY, RISE_GREY, RISE_GREY, 1],
+    [FALL_GREY, FALL_GREY, FALL_GREY, 1],
     [EMPTY, EMPTY, EMPTY, 1]]
   let draw = position => {
     simulator.input({
@@ -115,6 +119,8 @@ function init () {
       case '5':
       case '6':
       case '7':
+      case '8':
+      case '9':
         selectedCellType = parseInt(e.key, 10) - 1
         console.info('Cell type:', cellTypes[selectedCellType])
         break
