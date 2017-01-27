@@ -19,6 +19,7 @@
     "webpack-glsl-loader": "^1.0.1"
   },
   "dependencies": {
+    "gif.js": "^0.2.0",
     "twgl-base.js": "^2.7.0"
   }
 }

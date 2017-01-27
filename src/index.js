@@ -1,3 +1,5 @@
+import GIF from 'gif.js'
+
 import {createSimulator} from './simulator'
 
 function init () {
@@ -15,6 +17,13 @@ function init () {
   let isMouseDown = false
   let mousePosition = { x: 0, y: 0 }
   let running = false
+  let gif
+
+  let addFrameIfRecording = () => {
+    if (gif) {
+      gif.addFrame(canvas, {delay: 40, copy: true})
+    }
+  }
 
   // input
   const FALL_GREY = 1 / 8
@@ -53,6 +62,7 @@ function init () {
           draw(mousePosition)
         }
         simulator.display()
+        addFrameIfRecording()
         animationFrame = window.requestAnimationFrame(loop)
       })()
       running = true
@@ -100,8 +110,11 @@ function init () {
     - 7 or q: Select cell type EMPTY
     - ArrowUp: Increase brush size
     - ArrowDown: Decrease brush size
+    - ArrowRight: Step
     - t: toggle color adjustment
     - r: show raw state (for saving)
+    - j: start gif recording (records as simulation steps/runs)
+    - k: end gif recording (opens result in new window)
   `)
   let keydown = e => {
     e.preventDefault()
@@ -146,6 +159,7 @@ function init () {
           simulator.update()
           simulator.display()
           console.info('Stepping')
+          addFrameIfRecording()
         }
         break
       case 't':
@@ -156,6 +170,30 @@ function init () {
       case 'r':
         simulator.showRaw()
         console.info('showing raw state')
+        break
+      case 'j':
+        gif = new GIF({
+          width: canvas.width,
+          height: canvas.height,
+          quality: 10,
+          workerScript: 'gif.worker.js'
+        })
+        simulator.display()
+        addFrameIfRecording()
+        console.info('starting gif recording')
+        break
+      case 'k':
+        if (!gif) break
+        gif.on('finished', blob => {
+          console.info('finished rendering gif')
+          let win = window.open(window.URL.createObjectURL(blob))
+          win.onbeforeunload = () => {
+            window.URL.revokeObjectURL(blob)
+          }
+        })
+        gif.render()
+        gif = null
+        console.info('ending gif recording')
         break
       default:
     }
