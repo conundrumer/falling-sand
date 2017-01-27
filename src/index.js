@@ -1,6 +1,5 @@
-import GIF from 'gif.js'
-
 import {createSimulator} from './simulator'
+import {createRecorder} from './recorder'
 
 function init () {
   // dom nodes
@@ -11,19 +10,14 @@ function init () {
   let simulator = createSimulator(gl)
   simulator.display()
 
+  let recorder = createRecorder()
+
   // state
   let selectedCellType = 0
   let brushSize = 1
   let isMouseDown = false
   let mousePosition = { x: 0, y: 0 }
   let running = false
-  let gif
-
-  let addFrameIfRecording = () => {
-    if (gif) {
-      gif.addFrame(canvas, {delay: 40, copy: true})
-    }
-  }
 
   // input
   const FALL_GREY = 1 / 8
@@ -62,7 +56,7 @@ function init () {
           draw(mousePosition)
         }
         simulator.display()
-        addFrameIfRecording()
+        recorder.addFrameIfRecording(canvas)
         animationFrame = window.requestAnimationFrame(loop)
       })()
       running = true
@@ -99,6 +93,8 @@ function init () {
 
   // keyboard events
   console.info(`
+    Drag and drop an image to load
+
     Key Commands:
     - Space bar: Start/stop simulation
     - 1: Select cell type RED RISE
@@ -159,7 +155,7 @@ function init () {
           simulator.update()
           simulator.display()
           console.info('Stepping')
-          addFrameIfRecording()
+          recorder.addFrameIfRecording(canvas)
         }
         break
       case 't':
@@ -172,27 +168,20 @@ function init () {
         console.info('showing raw state')
         break
       case 'j':
-        gif = new GIF({
-          width: canvas.width,
-          height: canvas.height,
-          quality: 10,
-          workerScript: 'gif.worker.js'
-        })
+        if (recorder.isRecording()) {
+          console.info('already recording!')
+          break
+        }
+        recorder.start(canvas)
         simulator.display()
-        addFrameIfRecording()
+        recorder.addFrameIfRecording(canvas)
         console.info('starting gif recording')
         break
       case 'k':
-        if (!gif) break
-        gif.on('finished', blob => {
+        if (!recorder.isRecording()) break
+        recorder.end(() => {
           console.info('finished rendering gif')
-          let win = window.open(window.URL.createObjectURL(blob))
-          win.onbeforeunload = () => {
-            window.URL.revokeObjectURL(blob)
-          }
         })
-        gif.render()
-        gif = null
         console.info('ending gif recording')
         break
       default:
