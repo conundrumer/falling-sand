@@ -10,14 +10,19 @@ function initTexture (textureData, width, height) {
 }
 
 let hotReload
-export function createSandbox (gl) {
+export function createSandbox (gl, image) {
   if (module.hot && hotReload) return hotReload
 
-  let width = 64
-  let height = 64
+  let width = 128
+  let height = 128
+  let textureData
 
-  let textureData = new Uint8Array(width * height * 4)
-  initTexture(textureData, width, height)
+  if (image) {
+    textureData = image
+  } else {
+    textureData = new Uint8Array(width * height * 4)
+    initTexture(textureData, width, height)
+  }
 
   let textureOptions = {
     width,

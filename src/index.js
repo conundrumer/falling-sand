@@ -65,6 +65,7 @@ function init () {
 
   // mouse events
   let mousedown = e => {
+    if (e.button !== 0) return
     e.preventDefault()
     isMouseDown = true
     mousePosition = { x: e.clientX, y: e.clientY }
@@ -96,12 +97,14 @@ function init () {
     - 4: Select cell type RED FALL
     - 5: Select cell type GREEN FALL
     - 6: Select cell type BLUE FALL
-    - 7: Select cell type EMPTY
+    - 7 or q: Select cell type EMPTY
     - ArrowUp: Increase brush size
     - ArrowDown: Decrease brush size
+    - t: toggle color adjustment
+    - r: show raw state (for saving)
   `)
   let keydown = e => {
-    // e.preventDefault()
+    e.preventDefault()
     switch (e.key) {
       case ' ':
         if (running) {
@@ -124,6 +127,10 @@ function init () {
         selectedCellType = parseInt(e.key, 10) - 1
         console.info('Cell type:', cellTypes[selectedCellType])
         break
+      case 'q':
+        selectedCellType = 8
+        console.info('Cell type:', cellTypes[selectedCellType])
+        break
       case 'ArrowUp':
         brushSize += 1
         console.info('Brush Size:', brushSize)
@@ -141,21 +148,53 @@ function init () {
           console.info('Stepping')
         }
         break
+      case 't':
+        simulator.toggleAdjust()
+        simulator.display()
+        console.info('Toggling color adjustment')
+        break
+      case 'r':
+        simulator.showRaw()
+        console.info('showing raw state')
+        break
       default:
     }
   }
+
+  let resize = () => {
+    simulator.display()
+  }
+
+  let drop = e => {
+    e.preventDefault()
+    console.info('Loading dropped file')
+    let file = e.dataTransfer.files[0]
+    timer.stop()
+    simulator.dispose()
+    simulator = createSimulator(gl, window.URL.createObjectURL(file))
+    setTimeout(() => simulator.display(), 100)
+  }
+
+  let dragover = e => e.preventDefault()
+
+  canvas.addEventListener('dragover', dragover)
+  canvas.addEventListener('drop', drop)
   canvas.addEventListener('mousedown', mousedown)
   canvas.addEventListener('mousemove', mousemove)
   window.addEventListener('mouseup', mouseup)
   document.addEventListener('keydown', keydown)
+  window.addEventListener('resize', resize)
 
   if (module.hot) {
     module.hot.dispose(() => {
       timer.stop()
+      canvas.removeEventListener('dragover', dragover)
+      canvas.removeEventListener('drop', drop)
       canvas.removeEventListener('mousedown', mousedown)
       canvas.removeEventListener('mousemove', mousemove)
       window.removeEventListener('mouseup', mouseup)
       document.removeEventListener('keydown', keydown)
+      window.removeEventListener('resize', resize)
     })
   }
 }

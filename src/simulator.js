@@ -9,7 +9,7 @@ import ruleFrag from './rule.frag'
 import {createSandbox} from './sandbox'
 
 let hotReload
-export function createSimulator (gl) {
+export function createSimulator (gl, image) {
   if (module.hot && hotReload) return hotReload
 
   let inputProgramInfo = twgl.createProgramInfo(gl, [drawVert, drawFrag])
@@ -21,7 +21,7 @@ export function createSimulator (gl) {
     position: { numComponents: 2, data: [1, 1, 1, -1, -1, 1, -1, -1] }
   })
 
-  let sandbox = createSandbox(gl)
+  let sandbox = createSandbox(gl, image)
 
   function render ({programInfo, uniforms, viewport, framebufferInfo = null}) {
     gl.useProgram(programInfo.program)
@@ -32,6 +32,7 @@ export function createSimulator (gl) {
     twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLE_STRIP)
   }
 
+  let adjust = true
   let time = 0
   function step (programInfo) {
     render({
@@ -64,15 +65,37 @@ export function createSimulator (gl) {
       })
     },
     display () {
-      twgl.resizeCanvasToDisplaySize(gl.canvas)
+      twgl.resizeCanvasToDisplaySize(gl.canvas, window.devicePixelRatio)
       render({
         programInfo: displayProgramInfo,
         uniforms: {
+          adjustColor: adjust,
           state: sandbox.getTexture(),
           resolution: [gl.canvas.width, gl.canvas.height]
         },
         viewport: [0, 0, gl.canvas.width, gl.canvas.height]
       })
+    },
+    toggleAdjust () {
+      adjust = !adjust
+    },
+    showRaw () {
+      let [width, height] = sandbox.getDimensions()
+      gl.canvas.width = width
+      gl.canvas.height = height
+      render({
+        programInfo: displayProgramInfo,
+        uniforms: {
+          adjustColor: false,
+          state: sandbox.getTexture(),
+          resolution: [gl.canvas.width, gl.canvas.height]
+        },
+        viewport: [0, 0, gl.canvas.width, gl.canvas.height]
+      })
+    },
+    dispose () {
+      sandbox.dispose()
+      hotReload = null
     }
   }
 
